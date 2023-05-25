@@ -1,5 +1,5 @@
 import openai as oa                                                 
-oa.api_key = "our_apikey"                     
+oa.api_key = "our_apkikey"                     
 
 def gpt_request(text_for_gpt):
     retries = 0
