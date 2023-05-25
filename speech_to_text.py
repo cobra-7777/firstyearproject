@@ -1,11 +1,13 @@
 import speech_recognition as sr
                                       
-r = sr.Recognizer()                         # Initialize recognizer class 
+r = sr.Recognizer()                                
                                                         
-audio = sr.AudioFile("harvard.wav")         # Path of the audio object
+audio = sr.AudioFile("harvard.wav")                 
 
-with audio as source:                       # Read audio object and transcribe
-    audio = r.record(source)                  
-    sr_result = r.recognize_google(audio)
-    
-print(sr_result)
+try:
+    with audio as source:                           
+        audio = r.record(source)                  
+        sr_result = r.recognize_google(audio)
+    print(sr_result)
+except:
+    print("The speech to text conversion failed...")
