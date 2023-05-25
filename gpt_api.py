@@ -1,7 +1,5 @@
-# Our OpenAI API Key: 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
-
 import openai as oa                                                 
-oa.api_key = "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"                     
+oa.api_key = "our_apikey"                     
 
 def gpt_request(text_for_gpt):
     try:
@@ -14,5 +12,5 @@ def gpt_request(text_for_gpt):
         result = completion.choices[0].message.content
     except:
         print("Failed to interact with ChatGPT...")
-    
+
     return(result)
