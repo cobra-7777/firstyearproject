@@ -1,7 +1,7 @@
 from docx import Document
 from datetime import date
 
-doc_name = "Lecture " + date.today()
+doc_name = "Lecture " + str(date.today()) + ".docx"
 
 def text_to_doc(title, input_text): 
     retries = 0
