@@ -13,7 +13,7 @@ print(gpt_result)
 
 sleep(5)
 
-ttd.text_to_doc("A Document Title", gpt_result, "TheBigTest.docx")
+ttd.text_to_doc("A Document Title", gpt_result)
 
 sleep(5)
 
