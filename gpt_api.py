@@ -1,5 +1,5 @@
 import openai as oa                                                 
-oa.api_key = "our_apkikey"                     
+oa.api_key = "our_apikey"                     
 
 def gpt_request(text_for_gpt):
     retries = 0
@@ -9,7 +9,7 @@ def gpt_request(text_for_gpt):
             completion = oa.ChatCompletion.create(                              
                 model="gpt-3.5-turbo",                                            
                 messages=[
-                    {"role": "user", "content": "The following text is recorded from a classroom. Take the following text, and make a short resume, summarizing the most important points so that a student could get an idea of what was taught in the classroom: " + text_for_gpt}
+                    {"role": "user", "content": "The following text is recorded from a classroom. Take the following text, and make a short resume, summarizing the most important points so that a student could get an idea of what was taught in the classroom. Make sure to format the text nicely, as your response will be put into a DOCS file. Heres the text: " + text_for_gpt}
                 ]
             )
             result = completion.choices[0].message.content

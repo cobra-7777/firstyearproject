@@ -1,5 +1,6 @@
 import speech_to_text as stt
 import gpt_api as gpt
+import text_to_docfile as ttd
 from time import sleep
 
 stt_result = stt.transcribe_audio("resources/harvard.wav")
@@ -12,4 +13,8 @@ print(gpt_result)
 
 sleep(5)
 
-print("You should now have a transcribed version of the .wav file, and a version where ChatGPT attempted to extract the most important information of the transcription.")
+ttd.text_to_doc("A Document Title", gpt_result, "TheBigTest.docx")
+
+sleep(5)
+
+print("You should now have a DOCS file with the most important points of the .wav file")

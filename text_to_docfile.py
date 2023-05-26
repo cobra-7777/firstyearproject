@@ -1,6 +1,9 @@
 from docx import Document
+from datetime import date
 
-def text_to_doc(title, input_text, doc_name): # doc_name has to be the format: "name.docx"
+doc_name = "Lecture " + date.today()
+
+def text_to_doc(title, input_text): # doc_name has to be the format: "name.docx"
     retries = 0
     success = False
     while retries <= 5 and success == False:
