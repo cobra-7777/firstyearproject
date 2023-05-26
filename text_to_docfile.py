@@ -3,7 +3,7 @@ from datetime import date
 
 doc_name = "Lecture " + date.today()
 
-def text_to_doc(title, input_text): # doc_name has to be the format: "name.docx"
+def text_to_doc(title, input_text): 
     retries = 0
     success = False
     while retries <= 5 and success == False:
