@@ -3,7 +3,7 @@ import gpt_api as gpt
 import text_to_docfile as ttd
 from time import sleep
 
-stt_result = stt.transcribe_audio("resources/harvard.wav")
+stt_result = stt.transcribe_audio("resources/The danger of silence.wav")
 print(stt_result)
 
 sleep(5)
