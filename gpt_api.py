@@ -1,5 +1,5 @@
 import openai as oa                                                 
-oa.api_key = "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"                     
+oa.api_key = "our_apikey"                     
 
 def gpt_request(text_for_gpt):
     retries = 0
