@@ -17,7 +17,7 @@ def start_recording():
     # Set the recording parameters
     fs = 44100  # Sample rate
     channels = 1  # Number of audio channels
-    filename = date.today() + 'recording.wav'  # Output filename
+    filename = "Recorded Lecture " + date.today()  # Output filename
 
     is_recording = False
 
@@ -29,11 +29,12 @@ def start_recording():
             print("Recording started..")
             record_audio(fs, channels, filename)
             is_recording = True
-            print("Recording saved as", filename)
+            print("Recording saved as ", filename)
 
         elif button_state == 'pressed' and is_recording:
             # Stop recording
             print("Recording stopped.")
             is_recording = False
+            break
 
         sleep(0.1)
