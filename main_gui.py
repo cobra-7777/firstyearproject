@@ -1,8 +1,8 @@
-from machine import Pin, PWM
+from pigpio import Pin, PWM
 from gpio_lcd import GpioLcd
 import time
 import neopixel
-import urandom
+from random import randint
 import utime
 import text_to_docfile as ttd
 import speech_to_text as stt
@@ -99,6 +99,7 @@ def toggle_recording():
         lcd.putstr("Recording...")
         neopixel_strip[0] = (255, 0, 0)  # Set Neopixel color to red
         neopixel_strip.write()
+        #ar.start_recording()   # Starting recording
     else:
         lcd.clear()
         display_menu()
@@ -128,7 +129,7 @@ sound_frequency = 440  # set sound frequency
 play_tone(sound_frequency, 1)  # Play sound for 1 second
 
 for _ in range(3):  # pulses for approximately 3 seconds
-    r, g, b = [urandom.randint(0, 255) for _ in range(3)]
+    r, g, b = [randint(0, 255) for _ in range(3)]
     for i in range(0, 255, 5):
         for j in range(neopixel_strip_3.n):
             neopixel_strip_3[j] = (int(r * i / 255), int(g * i / 255), int(b * i / 255))

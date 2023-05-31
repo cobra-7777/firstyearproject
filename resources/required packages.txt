@@ -2,5 +2,9 @@ pip install openai
 pip install gtts 
 pip install speechrecognition
 pip install python-docx
-pip install scipy
+pip install wavio
 pip install sounddevice
+pip install pigpio
+pip install utime
+pip3 install adafruit-circuitpython-neopixel
+
