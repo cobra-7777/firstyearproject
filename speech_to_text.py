@@ -22,3 +22,5 @@ def transcribe_audio(file_path):
                 print("The speech to text conversion failed... Retrying for the " + str(retries) + " time...")
     
     return(sr_result)
+
+

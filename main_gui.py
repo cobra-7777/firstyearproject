@@ -1,29 +1,27 @@
-from pigpio import Pin, PWM
+from machine import Pin, PWM, UART
 from gpio_lcd import GpioLcd
 import time
+from time import sleep
 import neopixel
-from random import randint
+import urandom
 import utime
-import text_to_docfile as ttd
-import speech_to_text as stt
-import gpt_api as gpt
-import audio_recording as ar
-import text_to_speech as tts
+import sys
+
+uart = UART(2, 115200) 
 
 
-# Create the LCD object
+
 lcd = GpioLcd(rs_pin=Pin(26),
               enable_pin=Pin(27),
               d4_pin=Pin(14),
               d5_pin=Pin(12),
-              d6_pin=Pin(13),
-              d7_pin=Pin(15),
+              d6_pin=Pin(15),
+              d7_pin=Pin(13),
               num_lines=2, num_columns=16)
 
-# Initialize the buttons with pull-up resistors
-up_button = Pin(4, Pin.IN, Pin.PULL_UP)
-select_button = Pin(16, Pin.IN, Pin.PULL_UP)
-down_button = Pin(17, Pin.IN, Pin.PULL_UP)
+up_button = Pin(23, Pin.IN, Pin.PULL_UP)
+select_button = Pin(22, Pin.IN, Pin.PULL_UP)
+down_button = Pin(21, Pin.IN, Pin.PULL_UP)
 
 menu_items = ['Record', 'Ask', 'Saved REC', 'Settings']
 settings_submenus = ['Volume', 'Brightness', 'Contrast', 'Connection']
@@ -35,16 +33,12 @@ is_recording = False
 is_listening = False
 is_select_button_pressed = False
 
-# Initialize the Neopixel LEDs
 neopixel_pin = Pin(25, Pin.OUT)
 neopixel_strip = neopixel.NeoPixel(neopixel_pin, 1)
-
-# Add new Neopixel strip connected to pin 33
 neopixel_strip_3 = neopixel.NeoPixel(Pin(33, Pin.OUT), 3)
 
-# Initialize the speakers
-left_speaker_pin = PWM(Pin(5), freq=440, duty=0)  # Left speaker
-right_speaker_pin = PWM(Pin(18), freq=440, duty=0)  # Right speaker
+left_speaker_pin = PWM(Pin(5), freq=440, duty=0)  
+right_speaker_pin = PWM(Pin(18), freq=440, duty=0)  
 
 def play_tone(frequency, duration):
     left_speaker_pin.freq(frequency)
@@ -58,52 +52,53 @@ def play_tone(frequency, duration):
 def display_menu():
     lcd.clear()
     if in_settings_submenu:
-        # Display settings submenus
-        for i in range(2):  # Only two items can be displayed at once
+        # Submenus
+        for i in range(2):  # Sørger for at kun 2 menuer kan vises (grundet 2x16 display)
             item_index = settings_submenu_selection + i
             if item_index < len(settings_submenus):
                 item = settings_submenus[item_index]
                 if item_index == settings_submenu_selection:
-                    # Highlight the current selection
+                    # Lavre en > for at indikere hvor i menuen vi er
                     lcd.move_to(0, i)
                     lcd.putstr("> " + item)
                 else:
                     lcd.move_to(0, i)
                     lcd.putstr("  " + item)
     else:
-        # Display main menu
-        for i in range(2):  # Only two items can be displayed at once
+        # Vis hovedmenu
+        for i in range(2):  # fordi 2x16
             item_index = menu_top + i
             if item_index < len(menu_items):
                 item = menu_items[item_index]
                 if item_index == current_selection:
-                    # Highlight the current selection
+                    # menu highlight igen
                     lcd.move_to(0, i)
                     lcd.putstr("> " + item)
                 else:
                     lcd.move_to(0, i)
                     lcd.putstr("  " + item)
-    # turn off the neopixels when entering the menu
+    # slukker alle neopixels i menuen
     for i in range(neopixel_strip_3.n):
         neopixel_strip_3[i] = (0, 0, 0)
 
     neopixel_strip_3.write()
-    left_speaker_pin.duty(0)  # Make sure to stop the sound
-    right_speaker_pin.duty(0)  # Make sure to stop the sound
+    left_speaker_pin.duty(0)  
+    right_speaker_pin.duty(0)  
 
 def toggle_recording():
     global is_recording
     is_recording = not is_recording
     if is_recording:
         lcd.clear()
+        uart.write(f"1 \n")
         lcd.putstr("Recording...")
-        neopixel_strip[0] = (255, 0, 0)  # Set Neopixel color to red
+        neopixel_strip[0] = (255, 0, 0)  # rød pix
         neopixel_strip.write()
-        #ar.start_recording()   # Starting recording
     else:
         lcd.clear()
         display_menu()
-        neopixel_strip[0] = (0, 0, 0)  # Turn off Neopixel
+        neopixel_strip[0] = (0, 0, 0)  # sluk pix
+#         uart.write(f"2")
         neopixel_strip.write()
 
 def toggle_listening():
@@ -111,25 +106,25 @@ def toggle_listening():
     is_listening = not is_listening
     if is_listening:
         lcd.clear()
+        uart.write(f"3")
         lcd.putstr("Listening...")
-        neopixel_strip[0] = (0, 255, 0)  # Set Neopixel color to green
+        neopixel_strip[0] = (0, 255, 0)  # grøn pix
         neopixel_strip.write()
     else:
         lcd.clear()
         display_menu()
-        neopixel_strip[0] = (0, 0, 0)  # Turn off Neopixel
+        neopixel_strip[0] = (0, 0, 0)  # sluk pix
         neopixel_strip.write()
 
-# Display welcome message
+# "Welcome:-)"
 lcd.clear()
 lcd.move_to(0, 0)
 lcd.putstr("   Welcome :-)")
-sound_frequency = 440  # set sound frequency
+sound_frequency = 440
+play_tone(sound_frequency, 1)  # afspil lyd, 1 sek
 
-play_tone(sound_frequency, 1)  # Play sound for 1 second
-
-for _ in range(3):  # pulses for approximately 3 seconds
-    r, g, b = [randint(0, 255) for _ in range(3)]
+for _ in range(3):  # lysanimation
+    r, g, b = [urandom.randint(0, 255) for _ in range(3)]
     for i in range(0, 255, 5):
         for j in range(neopixel_strip_3.n):
             neopixel_strip_3[j] = (int(r * i / 255), int(g * i / 255), int(b * i / 255))
@@ -169,25 +164,23 @@ while True:
     if not select_button.value():
         select_button_press_time = utime.ticks_ms()
         while not select_button.value():
-            pass  # Wait for select button to be released
+            pass  # vent på selcet knap slippes
         press_duration = utime.ticks_diff(utime.ticks_ms(), select_button_press_time)
 
-        if press_duration > 2000:  # More than 2 seconds
+        if press_duration > 2000:  # "Select" ~ "Back" hvis holdt nede over 2 sek
             if in_settings_submenu:
-                # Back to main menu
+                # tilbage til hovedmenu
                 in_settings_submenu = False
                 settings_submenu_selection = 0
             else:
-                # Go to settings submenu
+                # gå til settings submenu
                 in_settings_submenu = True
             display_menu()
 
-        else:  # Short press
+        else: 
             if in_settings_submenu:
-                # Handle selection in settings submenu
                 print(f'Settings submenu selected: {settings_submenus[settings_submenu_selection]}')
             else:
-                # Handle selection in main menu
                 if menu_items[current_selection] == 'Record':
                     toggle_recording()
                 elif menu_items[current_selection] == 'Ask':
@@ -203,3 +196,6 @@ while True:
                     display_menu()
 
         time.sleep(0.2)
+
+
+
